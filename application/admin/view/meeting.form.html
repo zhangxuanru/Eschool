@@ -1,0 +1,198 @@
+{extend name='extra@admin/content'}
+
+{block name='content'}
+
+<!--右侧编辑区 开始-->
+<div class="panel panel-default ">
+    <div class="panel-heading">会议内容编辑</div>
+    <div class="panel-body">
+        <form class="form-horizontal" role="form" name="meeting" onsubmit="return false;" style="margin-left:5%;">
+            <div class="form-group">
+                <div class="col-md-8">
+                    <div class="input-group">
+                        <span class="input-group-addon">会议主题</span>
+                        <input maxlength="64" required="required" title="会议主题不能为空哦" placeholder="请在这里输入会议主题" name='m_topic' class="layui-input">
+                        <input type="hidden" name="id">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">红头标号</span>
+                        <input maxlength="8" required="required" title="请输入红头标号" value="{$vo.red_heade|default='中国高等教育学会'}" placeholder="请输入红头标号" name='red_heade' class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">会议编号</span>
+                        <input maxlength="8" required="required" title="会议编号不能为空哦" placeholder="请输入会议编号" name='m_code' class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-6">
+                    <div class="input-group">
+                        <span class="input-group-addon">报名费用</span>
+                        <input maxlength="8" required="required" title="请输入报名费用" value="{$vo.apply_fee|default='0.00'}" placeholder="请输入报名费用" name='apply_fee' class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-addon">会议状态</span>
+                        <div>
+                            <div class="layui-form-radio" style="text-align: inherit;margin-left: 10px;">
+                                <span style="text-align: inherit" >开启
+                                     <input  type="radio" name="status" value="1" title="开启" checked="">
+                                </span>
+                            </div>
+                            <div class="layui-form-radio" style="text-align: inherit">
+                                    <span >关闭
+                                        <input type="radio" name="status" value="0" title="关闭">
+                                    </span>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+
+
+
+            <div class="form-group">
+                <div class="col-md-12">
+                    <textarea name='m_content'></textarea>
+                </div>
+            </div>
+
+            <div class="layui-form-pane ">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">报名时间</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" placeholder="开始时间"  name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    </div>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" placeholder="截止时间"  name="end_time"  onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">签到时间</label>
+                    <div class="layui-input-inline">
+                        <input class="layui-input" placeholder="签到时间" name="apply_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                    </div>
+                </div>
+            </div>
+            <div class="form-actions">
+                <div class="row">
+                    <div class=" col-md-12">
+                        <button data-submit type="button" class="layui-btn">保存会议</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+<!--右侧编辑区 结束-->
+
+{/block}
+
+
+{block name='script'}
+<script>
+    $(function () {
+
+        var editDdata = {$vo.articles | default = [] | json_encode};
+
+        require(['ueditor','laydate','layui'], function () {
+            /*! 实例富文本编辑器  */
+            var editor, $item;
+
+            /*! 默认编辑第一篇图文 */
+            editor = window.createEditor('[name="m_content"]', 'basic');
+
+            /*! 编辑器初始化成功 */
+            editor.ready(function () {
+
+                var $form = $('form[name="meeting"]'), $body = $('body');
+
+                $form.validate();
+
+                /*! 数据提交 */
+                $form.find('button[data-submit]').on('click', function () {
+                    $form.submit();
+                    if (!syncEditor()) {
+                        return false;
+                    }
+                   $.form.load('__SELF__', {data: $item}, "post");
+                });
+
+                /*! 同步编辑器 */
+                function syncEditor() {
+                    // 处理上一个编辑器
+                    if ($form) {
+                        var data = {};
+                        data.id = $form.find('[name=id]').val();
+                        data.m_code = $form.find('[name=m_code]').val();
+                        data.m_content = editor.getContent() || '';
+                        data.red_heade = $form.find('[name=red_heade]').val();
+                        data.m_topic = $form.find('[name=m_topic]').val();
+                        data.apply_fee = $form.find('[name=apply_fee]').val();
+                        data.start_time = $form.find('[name=start_time]').val();
+                        data.end_time    = $form.find('[name=end_time]').val();
+                        data.apply_time = $form.find('[name=apply_time]').val();
+                        data.status     = $form.find('[name=status]:checked').val();
+                        $form.submit();
+                        $item = data;
+                    }
+                    return true;
+                }
+
+                /*! 显示编辑器 */
+                function showEditor() {
+                    // 读取对象数据
+                    $item = $('.news-item.active');
+                    this.get = function () {
+                        var data = $item.data('item') || {};
+                        data.id = data.id || 0;
+                        data.title = data.title || '';
+                        data.local_url = data.local_url || '__PUBLIC__/static/plugs/uploader/theme/image.png';
+                        data.content = data.content || '';
+                        data.author = data.author || '';
+                        data.digest = data.digest || '';
+                        data.show_cover_pic = data.show_cover_pic || 0;
+                        return data;
+                    };
+                    // 重置表单
+                    $form.get(0).reset();
+                    // 获取当前数据
+                    var data = this.get();
+                    for (var i in data) {
+                        if (i !== 'content' && i !== 'show_cover_pic') {
+                            $form.find('[name="' + i + '"]').val(data[i]).trigger('change');
+                        }
+                    }
+                    if (parseInt(data.show_cover_pic) === 1) {
+                        $form.find('[name="show_cover_pic"]').get(0).checked = true;
+                    }
+                    editor.setContent(data.content);
+                }
+
+                /*! 添加新图文 */
+                $body.off('click', '.news-box .article-add').on('click', '.news-box .article-add', function () {
+                    var $html = $('<div class="news-item transition" style="background-image:url(__PUBLIC__/static/plugs/uploader/theme/image.png)"><a class="upload-multiple-close fa fa-close hide"></a><span class="news-title"></span></div><hr />');
+                    $html.insertBefore(this).trigger('click');
+                    $('.news-item').size() >= 7 && $(this).hide();
+                });
+
+
+                /*! 默认显示第一个 */
+                $('.news-box .news-item:first').trigger('click');
+            });
+        });
+    });
+</script>
+{/block}
+

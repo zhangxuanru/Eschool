@@ -125,29 +125,8 @@ class News extends BasicAdmin {
         $this->error('图文更新失败，请稍候再试！');
     }
 
-    /**
-     * 图文更新操作
-     * @param array $data
-     * @param array $ids
-     * @return string
-     */
-    protected function _apply_news_article($data, $ids = []) {
-        foreach ($data as &$vo) {
-            $vo['create_by'] = session('user.id');
-            $vo['create_at'] = date('Y-m-d H:i:s');
-            $vo['digest'] = empty($vo['digest']) ? mb_substr(strip_tags(str_replace(["\s", '　'], '', $vo['content'])), 0, 120) : $vo['digest'];
-            if (empty($vo['id'])) {
-                $result = $id = Db::name('WechatNewsArticle')->insertGetId($vo);
-            } else {
-                $id = intval($vo['id']);
-                $result = Db::name('WechatNewsArticle')->where('id', $id)->update($vo);
-            }
-            if ($result !== FALSE) {
-                $ids[] = $id;
-            }
-        }
-        return join(',', $ids);
-    }
+
+
 
     /**
      * 删除用户

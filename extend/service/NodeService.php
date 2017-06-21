@@ -86,6 +86,9 @@ class NodeService {
         }
         $nodes = [];
         $ignore = [
+            'wechat',
+            'trade',
+            'www',
             'index',
             'wechat/api', 'wechat/notify', 'wechat/review',
             'admin/plugs', 'admin/login', 'admin/index',

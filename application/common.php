@@ -124,3 +124,11 @@ if (!function_exists("array_column")) {
     }
 
 }
+
+if (!function_exists("dd")) {
+
+    function dd($data) {
+        file_put_contents('/Users/pushaowei/debug',var_export([$data],true));
+    }
+
+}
