@@ -37,6 +37,7 @@ class News extends BasicAdmin {
      */
     public $table = 'WechatNews';
 
+    public function forbid(){}
     /**
      * 图文列表
      */

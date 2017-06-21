@@ -5,6 +5,7 @@ namespace app\admin\controller;
 use controller\BasicAdmin;
 use service\DataService;
 use think\Db;
+use think\Request;
 
 /**
  * Meeting
@@ -27,6 +28,7 @@ class Meeting  extends BasicAdmin
         $get = $this->request->get();
         // 实例Query对象
         $db = Db::name($this->table)->where('status', '1');
+
         // 应用搜索条件
         foreach (['m_topic'] as $key) {
             if (isset($get[$key]) && $get[$key] !== '') {
@@ -42,7 +44,8 @@ class Meeting  extends BasicAdmin
      */
     public function meeting(){
         if ($this->request->isGet()) {
-            return view('form', ['title' => '发表会议']);
+            $id = $this->request->get('id','');
+            return view('form', ['title' => '发表会议','id'=> $id,'vo' => Db::name('Meeting')->where('id',$id)->find()]);
         }
         if ($this->request->isPost()) {
             $data = $this->request->post();
@@ -74,6 +77,21 @@ class Meeting  extends BasicAdmin
         }
         if ($result !== FALSE) {
             return true;
+        }
+    }
+
+    /**
+     * 关闭
+     */
+    public function forbid(){
+        if($this->request->isPost()){
+            $data = $this->request->post();
+            $result = Db::name('Meeting')->where('id', $data['id'])
+                        ->update([$data['field'] => $data['value']]);
+            if( $result !== FALSE ){
+                $this->success('操作成功','');
+            }
+            $this->error('操作失败');
         }
     }
 
