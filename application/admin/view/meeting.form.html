@@ -61,7 +61,7 @@
             </div>
             <div class="form-group">
                 <div class="col-md-12">
-                    <textarea name='m_content'>{$vo.m_content|default='0.00'}</textarea>
+                    <textarea name='m_content'>{$vo.m_content}</textarea>
                 </div>
             </div>
                     <?php
@@ -147,6 +147,13 @@
                         data.apply_time = $form.find('[name=apply_time]').val();
                         data.m_status = $form.find('[name=m_status]:checked').val();
                         $form.submit();
+                        if (data.m_content.length < 1) {
+                            editor.setContent('会议内容不能留空，请输入内容！');
+                            return false;
+                        }
+                        if( $form.find('input.validate-error').size() > 0 ){
+                            return false;
+                        }
                         $item = data;
                     }
                     return true;
