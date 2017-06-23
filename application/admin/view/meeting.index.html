@@ -26,9 +26,6 @@
     <input type="hidden" value="resort" name="action"/>
     <table class="table table-hover">
         <thead>
-        <th class='list-table-check-td'>
-            <input data-none-auto="" data-check-target='.list-check-box' type='checkbox'/>
-        </th>
         <th class='text-center'>会议主题</th>
         <th class='text-center'>会议编号</th>
         <th class='text-center'>开始报名时间</th>
@@ -43,40 +40,40 @@
         <tbody>
         {foreach $list as $key=>$vo}
         <tr>
-            <td class='list-table-check-td'>
-                <input class="list-check-box" value='{$vo.id}' type='checkbox'/>
-            </td>
             <td class='text-center'>{$vo.m_topic}</td>
             <td class='text-center'>{$vo.m_code|default="<span style='color:#ccc'>未设置编号</span>"}</td>
-            <td class='text-center'>{$vo.start_time|default="<span style='color:#ccc'>开始时间未确定</span>"}</td>
-            <td class='text-center'>{$vo.end_time|default="<span style='color:#ccc'>结束时间未确定</span>"}</td>
-            <td class='text-center'>{$vo.apply_time|default="<span style='color:#ccc'>报名时间未确定</span>"}</td>
+            <td class='text-center'>{$vo.start_time|date="Y-m-d H:i:s",###}</td>
+            <td class='text-center'>{$vo.end_time|date="Y-m-d H:i:s",###}</td>
+            <td class='text-center'>{$vo.apply_time|date="Y-m-d H:i:s",###}</td>
             <td class='text-center'>
-                {if $vo.status eq 0}
-                <span>已禁用</span>
+                {if $vo.m_status eq 0}
+                <span>已关闭</span>
                 {elseif $vo.status eq 1}
                 <span style="color:#090">使用中</span>
                 {/if}
             </td>
-            <td class='text-center'>{$vo.o_id}</td>
+            <?php $org_name = \think\Db::name('SystemUser')
+                              ->where('id', $vo['o_id'])
+                                ->value('organ');
+            ?>
+            <td class='text-center'><?=$org_name;?></td>
             <td class='text-center'>{$vo.create_at}</td>
             <td class='text-center nowrap'>
                 {if auth("$classuri/edit")}
                 <span class="text-explode">|</span>
                 <a  href="#/meeting/meeting?id={$vo.id}">编辑</a>
                 {/if}
-                {if $vo.status eq 1 and auth("$classuri/forbid")}
+                {if $vo.m_status eq 1}
                 <span class="text-explode">|</span>
-                <a data-update="{$vo.id}" data-field='status' data-value='0' data-action='{:url("$classuri/forbid")}'
+                <a data-update="{$vo.id}" data-field='m_status' data-value='0' data-action='{:url("$classuri/forbid")}'
                    href="javascript:void(0)">关闭</a>
-                {elseif auth("$classuri/resume")}
+                {else}
                 <span class="text-explode">|</span>
-                <a data-update="{$vo.id}" data-field='status' data-value='1' data-action='{:url("$classuri/resume")}'
-                   href="javascript:void(0)">开启</a>
+                <a data-update="{$vo.id}" data-field='m_status' data-value='1' data-action='{:url("$classuri/forbid")}'>开启</a>
                 {/if}
                 {if auth("$classuri/del")}
                 <span class="text-explode">|</span>
-                <a data-update="{$vo.id}" data-field='delete' data-action='{:url("$classuri/del")}'
+                <a data-update="{$vo.id}" data-field='status'data-value='0'  data-action='{:url("$classuri/forbid")}'
                    href="javascript:void(0)">删除</a>
                 {/if}
             </td>

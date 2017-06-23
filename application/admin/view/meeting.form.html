@@ -11,8 +11,8 @@
                 <div class="col-md-8">
                     <div class="input-group">
                         <span class="input-group-addon">会议主题</span>
-                        <input maxlength="64" required="required" title="会议主题不能为空哦" placeholder="请在这里输入会议主题" name='m_topic' class="layui-input">
-                        <input type="hidden" name="id">
+                        <input maxlength="64" required="required" title="会议主题不能为空哦" placeholder="请在这里输入会议主题" name='m_topic' class="layui-input" value="{$vo.m_topic|default=''}" >
+                        <input type="hidden" name="id" value="{$id}">
                     </div>
                 </div>
             </div>
@@ -28,7 +28,7 @@
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-addon">会议编号</span>
-                        <input maxlength="8" required="required" title="会议编号不能为空哦" placeholder="请输入会议编号" name='m_code' class="layui-input">
+                        <input maxlength="8" required="required" title="会议编号不能为空哦" placeholder="请输入会议编号" name='m_code' class="layui-input" value="{$vo.m_code|default=''}" >
                     </div>
                 </div>
             </div>
@@ -47,41 +47,43 @@
                         <div>
                             <div class="layui-form-radio" style="text-align: inherit;margin-left: 10px;">
                                 <span style="text-align: inherit" >开启
-                                     <input  type="radio" name="status" value="1" title="开启" checked="">
+                                     <input  type="radio" name="m_status" value="1" title="开启" <?=$vo['m_status'] == 1 ? 'checked' :'' ?>>
                                 </span>
                             </div>
                             <div class="layui-form-radio" style="text-align: inherit">
                                     <span >关闭
-                                        <input type="radio" name="status" value="0" title="关闭">
+                                        <input type="radio" name="m_status" value="2" title="关闭" <?=$vo['m_status'] == 2 ? 'checked' :'' ?>>
                                     </span>
                             </div>
                         </div>
                      </div>
                 </div>
             </div>
-
-
-
             <div class="form-group">
                 <div class="col-md-12">
-                    <textarea name='m_content'></textarea>
+                    <textarea name='m_content'>{$vo.m_content}</textarea>
                 </div>
             </div>
-
+                    <?php
+                        $date = function ($key) use ($vo){
+                            return isset($vo[$key]) ? date('Y-m-d H:i:s',$vo[$key]) : date('Y-m-d H:i:s');
+                        }
+                    ?>
             <div class="layui-form-pane ">
                 <div class="layui-form-item">
                     <label class="layui-form-label">报名时间</label>
                     <div class="layui-input-inline">
-                        <input class="layui-input" placeholder="开始时间"  name="start_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                        <input class="layui-input" placeholder="开始时间"  name="start_time" value="<?=$date('start_time')?>" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+
                     </div>
                     <div class="layui-input-inline">
-                        <input class="layui-input" placeholder="截止时间"  name="end_time"  onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                        <input class="layui-input" placeholder="截止时间"  name="end_time"   value="<?=$date('end_time')?>"  onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">签到时间</label>
                     <div class="layui-input-inline">
-                        <input class="layui-input" placeholder="签到时间" name="apply_time" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
+                        <input class="layui-input" placeholder="签到时间" name="apply_time" value="<?=$date('apply_time')?>"  onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})">
                     </div>
                 </div>
             </div>
@@ -141,55 +143,21 @@
                         data.m_topic = $form.find('[name=m_topic]').val();
                         data.apply_fee = $form.find('[name=apply_fee]').val();
                         data.start_time = $form.find('[name=start_time]').val();
-                        data.end_time    = $form.find('[name=end_time]').val();
+                        data.end_time = $form.find('[name=end_time]').val();
                         data.apply_time = $form.find('[name=apply_time]').val();
-                        data.status     = $form.find('[name=status]:checked').val();
+                        data.m_status = $form.find('[name=m_status]:checked').val();
                         $form.submit();
+                        if (data.m_content.length < 1) {
+                            editor.setContent('会议内容不能留空，请输入内容！');
+                            return false;
+                        }
+                        if( $form.find('input.validate-error').size() > 0 ){
+                            return false;
+                        }
                         $item = data;
                     }
                     return true;
                 }
-
-                /*! 显示编辑器 */
-                function showEditor() {
-                    // 读取对象数据
-                    $item = $('.news-item.active');
-                    this.get = function () {
-                        var data = $item.data('item') || {};
-                        data.id = data.id || 0;
-                        data.title = data.title || '';
-                        data.local_url = data.local_url || '__PUBLIC__/static/plugs/uploader/theme/image.png';
-                        data.content = data.content || '';
-                        data.author = data.author || '';
-                        data.digest = data.digest || '';
-                        data.show_cover_pic = data.show_cover_pic || 0;
-                        return data;
-                    };
-                    // 重置表单
-                    $form.get(0).reset();
-                    // 获取当前数据
-                    var data = this.get();
-                    for (var i in data) {
-                        if (i !== 'content' && i !== 'show_cover_pic') {
-                            $form.find('[name="' + i + '"]').val(data[i]).trigger('change');
-                        }
-                    }
-                    if (parseInt(data.show_cover_pic) === 1) {
-                        $form.find('[name="show_cover_pic"]').get(0).checked = true;
-                    }
-                    editor.setContent(data.content);
-                }
-
-                /*! 添加新图文 */
-                $body.off('click', '.news-box .article-add').on('click', '.news-box .article-add', function () {
-                    var $html = $('<div class="news-item transition" style="background-image:url(__PUBLIC__/static/plugs/uploader/theme/image.png)"><a class="upload-multiple-close fa fa-close hide"></a><span class="news-title"></span></div><hr />');
-                    $html.insertBefore(this).trigger('click');
-                    $('.news-item').size() >= 7 && $(this).hide();
-                });
-
-
-                /*! 默认显示第一个 */
-                $('.news-box .news-item:first').trigger('click');
             });
         });
     });
