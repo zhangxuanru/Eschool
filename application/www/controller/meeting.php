@@ -1,11 +1,12 @@
 <?php
 namespace app\www\controller;
 
-
+use think\Db; 
 use think\Request;
+use model\Apply as ApplyModel;
 
-class meeting extends base
-{
+class Meeting extends base
+{  
     /**
      * 显示资源列表
      *
@@ -71,6 +72,15 @@ class meeting extends base
             // 成功跳转支付
             $this->redirect('apply/verify',['aid'=>'1']);
        }else{
+           //根据mid查询表单模板类型
+            $db = Db::name('Meeting')->where('status', '1'); 
+
+             $list = new ApplyModel();
+            $row =  $list->where('id',1)->find();
+
+             print_r($row);
+
+
            return $this->fetch('apply',[
                'mid'   => $this->mid,
            ]);
