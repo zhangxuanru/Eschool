@@ -5,6 +5,7 @@ use controller\BasicAdmin;
 use service\DataService;
 use think\Db;
 use think\Request;
+use  app\admin\model\Meeting as MeetingModel;
 
 /**
  * Apply
@@ -15,15 +16,14 @@ use think\Request;
  */
 class Apply extends BasicAdmin
 {
-    public $table = 'Apply';
+    public $table = 'EschoolApply';
 
     public function index(){
         $this->title = '报名列表';
         // 获取到所有GET参数
         $get = $this->request->get();
         // 实例Query对象
-        $db = Db::name('Meeting')->where('status', '1');
-
+        $db = MeetingModel::get(['status'=>'1']);
         // 应用搜索条件
         foreach (['apply_name'] as $key) {
             if (isset($get[$key]) && $get[$key] !== '') {
@@ -60,5 +60,9 @@ class Apply extends BasicAdmin
                 'type' => $this->request->get('type', 'form_one')
         ]);
         return view();
+    }
+
+    public function details(){
+
     }
 }

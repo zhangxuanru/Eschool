@@ -16,7 +16,7 @@ use think\Request;
  */
 class Meeting  extends BasicAdmin
 {
-    public $table = 'Meeting';
+    public $table = 'EschoolMeeting';
 
     /**
      * 会议管理
@@ -45,7 +45,7 @@ class Meeting  extends BasicAdmin
     public function meeting(){
         if ($this->request->isGet()) {
             $id = $this->request->get('id','');
-            return view('form', ['title' => '发表会议','id'=> $id,'vo' => Db::name('Meeting')->where('id',$id)->find()]);
+            return view('form', ['title' => '发表会议','id'=> $id,'vo' => Db::name($this->table)->where('id',$id)->find()]);
         }
         if ($this->request->isPost()) {
             $data = $this->request->post();
@@ -64,16 +64,15 @@ class Meeting  extends BasicAdmin
      */
     protected function _apply_news_meeting($data) {
         $data['o_id']       = session('user.id');
-        $data['update_at']  = date('Y-m-d H:i:s');
         $data['start_time'] = strtotime($data['start_time']);
         $data['end_time']   = strtotime($data['end_time']);
         $data['apply_time'] = strtotime($data['apply_time']);
         $data['m_content']  = empty($data['m_content']) ? strip_tags( $data['m_content']) : $data['m_content'];
         if (empty($data['id'])) {
-            $result = $id = Db::name('Meeting')->insertGetId($data);
+            $result = $id = Db::name($this->table)->insertGetId($data);
         } else {
             $id = intval($data['id']);
-            $result = Db::name('Meeting')->where('id', $id)->update($data);
+            $result = Db::name($this->table)->where('id', $id)->update($data);
         }
         if ($result !== FALSE) {
             return true;
@@ -86,7 +85,7 @@ class Meeting  extends BasicAdmin
     public function forbid(){
         if($this->request->isPost()){
             $data = $this->request->post();
-            $result = Db::name('Meeting')->where('id', $data['id'])
+            $result = Db::name($this->table)->where('id', $data['id'])
                         ->update([$data['field'] => $data['value']]);
             if( $result !== FALSE ){
                 $this->success('操作成功','');

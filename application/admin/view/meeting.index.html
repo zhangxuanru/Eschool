@@ -44,7 +44,7 @@
             <td class='text-center'>{$vo.m_topic}</td>
             <td class='text-center'>{$vo.m_code|default="<span style='color:#ccc'>未设置编号</span>"}</td>
             <td class='text-center'>
-                <?php $apply_name = \think\Db::name('apply')
+                <?php $apply_name = \think\Db::name('EschoolApply')
                                 ->where('m_id', $vo['id'])
                                 ->value('apply_name');
                 if( empty($apply_name) ){
@@ -68,7 +68,7 @@
                                 ->value('organ');
             ?>
             <td class='text-center'><?=$org_name;?></td>
-            <td class='text-center'>{$vo.create_at}</td>
+            <td class='text-center'>{$vo.create_time}</td>
             <td class='text-center nowrap'>
                 {if auth("$classuri/edit")}
                 <span class="text-explode">|</span>
