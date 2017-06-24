@@ -42,14 +42,14 @@
         ?>
         <tr>
             <td class='text-center'>{$vo.m_topic}</td>
-            <td class='text-center'>
+            <td class='text-center nowrap'>
                 <?php $apply_name = \think\Db::name('EschoolApply')
                                 ->where('m_id', $vo['id'])
                 ->value('apply_name');
                 if( empty($apply_name) ){
                     echo "<a href='/#/apply/assoc?m_id=".$vo['id']."&m_name=".$vo['m_topic']."'>点击关联报名表</a>";
                 }else{
-                echo "<button data-action='/apply/details'  class='layui-btn layui-btn-small' data-title=".$apply_name."><i class='fa fa-calendar'></i>".$apply_name."</button>";
+                    echo "<button data-action='/apply/details?'  class='layui-btn layui-btn-small' data-title=".$apply_name."><i class='fa fa-calendar'></i>".$apply_name."</button>";
                 }
                 ?></td>
             <td class='text-center'><?=$org_name;?></td>

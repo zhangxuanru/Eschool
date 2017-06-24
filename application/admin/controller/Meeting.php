@@ -16,7 +16,7 @@ use think\Request;
  */
 class Meeting  extends BasicAdmin
 {
-    public $table = 'Meeting';
+    public $table = 'EschoolMeeting';
 
     /**
      * 会议管理
@@ -64,7 +64,6 @@ class Meeting  extends BasicAdmin
      */
     protected function _apply_news_meeting($data) {
         $data['o_id']       = session('user.id');
-        $data['update_at']  = date('Y-m-d H:i:s');
         $data['start_time'] = strtotime($data['start_time']);
         $data['end_time']   = strtotime($data['end_time']);
         $data['apply_time'] = strtotime($data['apply_time']);
@@ -86,7 +85,7 @@ class Meeting  extends BasicAdmin
     public function forbid(){
         if($this->request->isPost()){
             $data = $this->request->post();
-            $result = Db::name('Meeting')->where('id', $data['id'])
+            $result = Db::name($this->table)->where('id', $data['id'])
                         ->update([$data['field'] => $data['value']]);
             if( $result !== FALSE ){
                 $this->success('操作成功','');
