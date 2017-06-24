@@ -6,7 +6,7 @@ use controller\BasicAdmin;
 use service\DataService;
 use think\Db;
 use think\Request;
-use  app\admin\model\Order as OrderModel;
+use model\Order as OrderModel;
 
 /**
  * Order
@@ -25,11 +25,12 @@ class Order extends BasicAdmin
         $get = $this->request->get();
         // 实例Query对象
 
-        $list = Db::table($this->table)
-                ->alias('main')
-                ->join('EschoolUser   u','u.id = main.user_id')
-                ->join('EschoolTicket t','main.ticket = t.id')->select();
-dd($list);
+        $list = new OrderModel();
+        $list->alias('main')
+                ->join('eschool_User   u','u.id = main.user_id')
+                ->join('eschool_Ticket t','main.ticket = t.id')->select();
+
+        dd($list);
         // 实例化并显示
         //return parent::_list($list);
     }

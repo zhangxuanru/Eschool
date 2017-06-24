@@ -1,6 +1,6 @@
 <?php
 
-namespace app\admin\model;
+namespace model;
 
 use think\Model;
 
@@ -13,3 +13,4 @@ class Meeting extends Model
         return $this->hasOne('apply','m_id');
     }
 }
+
