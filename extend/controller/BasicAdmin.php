@@ -64,6 +64,8 @@ class BasicAdmin extends Controller {
         $pk = empty($pkField) ? ($db->getPk() ? $db->getPk() : 'id') : $pkField;
         $pkValue = $this->request->request($pk, isset($where[$pk]) ? $where[$pk] : (isset($extendData[$pk]) ? $extendData[$pk] : null));
         // 非POST请求, 获取数据并显示表单页面
+        dd($pkValue);
+
         if (!$this->request->isPost()) {
             $vo = ($pkValue !== null) ? array_merge((array) $db->where($pk, $pkValue)->where($where)->find(), $extendData) : $extendData;
             if (false !== $this->_callback('_form_filter', $vo)) {
@@ -72,6 +74,7 @@ class BasicAdmin extends Controller {
             }
             return $vo;
         }
+
         // POST请求, 数据自动存库
         $data = array_merge($this->request->post(), $extendData);
         if (false !== $this->_callback('_form_filter', $data)) {

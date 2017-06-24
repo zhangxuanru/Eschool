@@ -1,0 +1,135 @@
+{extend name='extra@admin/content'}
+
+{block name="style"}
+<style>
+    .layui-box .control-label {margin:0;padding-left:0;padding-right:0;}
+    .layui-box textarea {width: 95%}
+    .new-preview {
+        position: relative;
+        width: 45em;
+        height: 580px;
+        background-color: #f5f5f5;
+        border: 1px solid #e7e7eb;
+    }
+    .new-body {
+        width: 100%;
+        position: absolute;
+    }
+</style>
+{/block}
+
+{block name="content"}
+
+<!-- 效果预览区域 开始 -->
+<div class='new-preview pull-left'>
+    <div class='new-body'>
+        <iframe id="phone-preview" style="width: 100%;height: 580px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe>
+    </div>
+</div>
+<!-- 效果预览区域 结束 -->
+
+<div class="row" style="min-width:800px">
+    <div class='col-xs-6' style="margin-left:15px">
+        <form class="form-horizontal" role="form" data-auto="true" action="__SELF__" method="post">
+            <fieldset class="layui-elem-field layui-box" style="height:580px;position:absolute;width:535px">
+                <legend>{$title}</legend>
+                <div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label layui-form-label ">表 单 名</label>
+                        <div class="col-md-9">
+                            <input required="required" title='请输入报名表表单名' maxlength='20' name='apply_name' class="layui-input" value='{$vo.apply_name|default=""}'>
+                        </div>
+                    </div>
+                    <div class="form-group" >
+                        <label class="col-md-2 control-label layui-form-label label-required">上传附件</label>
+                        <label class="layui-form-label">
+                            <input data-none-auto type="radio" <?=isset($vo['update_file']) && $vo['update_file'] == '1' ? 'checked' :'' ?>   name="update_file" value="1"> 启用
+                        </label>
+                        <label class="layui-form-label">
+                            <input data-none-auto type="radio" <?=!isset($vo['update_file']) || $vo['update_file'] == '2' ? 'checked' :'' ?>  name="update_file" value="2"> 禁用
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-md-2 control-label layui-form-label label-required">表单类型</label>
+                        <div class="col-md-9">
+                            <select name='apply_type' class='layui-input'>
+                                <!--{if !isset($vo.apply_type) or $vo.apply_type eq 'form_one'}-->
+                                    <option value='form_one' selected>表单参考类型一</option>
+                                <!--{else}-->
+                                   <option value='form_one'>表单参考类型一</option>
+                                <!--{/if}-->
+                                <!--{if isset($vo.apply_type) and $vo.apply_type eq 'form_two'}-->
+                                <option value='form_two' selected>表单参考类型二</option>
+                                <!--{else}-->
+                                <option value='form_two'>表单参考类型二</option>
+                                <!--{/if}-->
+                                <!--{if isset($vo.apply_type) and $vo.apply_type eq 'form_three'}-->
+                                <option value='form_three' selected>表单参考类型三</option>
+                                <!--{else}-->
+                                <option value='form_three'>表单参考类型三</option>
+                                <!--{/if}-->
+                            </select>
+                        </div>
+                    </div>
+                    <input type="hidden" class='layui-input form_one'   value="form_one"  />
+                    <input type="hidden" class='layui-input form_two'   value="form_two"  />
+                    <input type="hidden" class='layui-input form_three' value="form_three"/>
+                    <input type="hidden"  name="m_id" value="{$m_id}">
+                    {if isset($vo['id'])}<input type='hidden' value='{$vo.id}' name='id'/>{/if}
+                </div>
+                <div class="text-center" style="position:absolute;bottom:20px;width:100%;">
+                    <div class="hr-line-dashed"></div>
+                    <button class="layui-btn menu-submit">保存数据</button>
+                    <button data-cancel-edit class="layui-btn layui-btn-danger" type='button'>取消编辑</button>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+{/block}
+
+{block name="script"}
+<script>
+
+    $(function () {
+        /*! 取消编辑 */
+        $('[data-cancel-edit]').on('click', function () {
+            $.msg.confirm('确定取消编辑吗？', function () {
+                window.location.href = '/#/meeting/index.html?spm=m-90-92';
+            });
+        });
+
+        /*! 默认类型事件 */
+        $('body').off('change', 'select[name=apply_type]').on('change', 'select[name=apply_type]', function () {
+            var value = $(this).val(), $form = $(this).parents('form');
+            switch (value) {
+                case 'form_one':
+                    return $('.form_one').trigger('change');
+                case 'form_two':
+                    return $('.form_two').trigger('change');
+                case 'form_three':
+                    return $('.form_three').trigger('change');
+            }
+        });
+
+        function showReview(params) {
+            $('#phone-preview').attr('src', '{:url("$classuri/review")}?' + $.param(params || {}));
+        }
+        $('body').off('change', '.form_one').on('change', '.form_one', function () {
+            showReview({type: 'form_one', content: this.value});
+        });
+
+        $('body').off('change', '.form_two').on('change', '.form_two', function () {
+            showReview({type: 'form_two', content: this.value});
+        });
+        $('body').off('change', '.form_three').on('change', '.form_three', function () {
+            showReview({type: 'form_three', content: this.value});
+        });
+
+        // 默认事件触发
+        $('select[name=apply_type]').map(function () {
+            $(this).trigger('change');
+        });
+    });
+</script>
+{/block}

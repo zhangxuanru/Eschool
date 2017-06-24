@@ -28,7 +28,7 @@
                 <div class="col-md-6">
                     <div class="input-group">
                         <span class="input-group-addon">会议编号</span>
-                        <input maxlength="8" required="required" title="会议编号不能为空哦" placeholder="请输入会议编号" name='m_code' class="layui-input" value="{$vo.m_code|default=''}" >
+                        <input maxlength="28" required="required" title="会议编号不能为空哦" placeholder="请输入会议编号" name='m_code' class="layui-input" value="{$vo.m_code|default=''}" >
                     </div>
                 </div>
             </div>
@@ -52,7 +52,7 @@
                             </div>
                             <div class="layui-form-radio" style="text-align: inherit">
                                     <span >关闭
-                                        <input type="radio" name="m_status" value="2" title="关闭" <?=$vo['m_status'] == 2 ? 'checked' :'' ?>>
+                                        <input type="radio" name="m_status" value="0" title="关闭" <?=$vo['m_status'] == 0 ? 'checked' :'' ?>>
                                     </span>
                             </div>
                         </div>
